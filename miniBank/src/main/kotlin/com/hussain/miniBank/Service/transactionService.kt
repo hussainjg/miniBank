@@ -2,7 +2,9 @@ package com.hussain.miniBank.Service
 
 import com.hussain.miniBank.Repo.*
 import com.hussain.miniBank.model.*
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 
 @Service
@@ -12,17 +14,21 @@ class TransactionsServices(
 ) {
     fun transfer(fromAccountId: Long, toAccountId: Long, amount: BigDecimal): TransactionEntity {
         val from = accountRepo.findById(fromAccountId)
-            .orElseThrow { Exception("Source account not found") }
+            .orElseThrow {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Source account not found")
+  }
 
         val to = accountRepo.findById(toAccountId)
-            .orElseThrow { Exception("Destination account not found") }
+            .orElseThrow {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Destination account not found")
+ }
 
         if (!from.isActive || !to.isActive) {
-            throw Exception("One of the accounts is inactive.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "One of the accounts is inactive.")
         }
 
         if (from.balance < amount) {
-            throw Exception("Insufficient balance in source account.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance in source account.")
         }
 
         val updatedFrom = from.copy(balance = from.balance - amount)
