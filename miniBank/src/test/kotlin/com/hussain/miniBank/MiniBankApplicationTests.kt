@@ -1,9 +1,11 @@
 package com.hussain.miniBank
 
-import org.junit.jupiter.api.Test
+import io.cucumber.spring.CucumberContextConfiguration
 import org.springframework.boot.test.context.SpringBootTest
+import kotlin.test.Test
 
-@SpringBootTest
+@CucumberContextConfiguration
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MiniBankApplicationTests {
 
 	@Test

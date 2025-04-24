@@ -34,6 +34,5 @@ class AccountController(private val accountService: AccountService) {
 }
 data class CreateAccountRequest(
     val userId: Long,
-    val name: String,
     val initialBalance: BigDecimal
 )

@@ -12,7 +12,7 @@ class AccountService(
     private val accountRepo: AccountRepo,
     private val usersRepository: UserRepo
 ) {
-    fun createAccount(userId: Long, balance: BigDecimal): AccountEntity {
+    fun createAccount(userId: Long, balance: BigDecimal?): AccountEntity {
         val user = usersRepository.findById(userId).orElseThrow {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found.")
         }
@@ -22,12 +22,15 @@ class AccountService(
         if (userAccountsCount >= 5) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Maximum accounts reached for this user.")
         }
-
-
-        val newAccount = AccountEntity(
-            user = user,
-            balance = balance)
+        if (balance == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "please enter balance to create a new account.")
+        }
+        if (balance < BigDecimal("0")) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be in positive.")
+        }
+        val newAccount = AccountEntity(user = user, balance = balance)
         return accountRepo.save(newAccount)
+
     }
 
     fun closeAccount(accountId: Long) {
